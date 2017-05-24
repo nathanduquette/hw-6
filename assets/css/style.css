@@ -1,0 +1,13 @@
+button,
+  div,
+  form,
+  input {
+    margin: 10px;
+}
+body {
+	background-color: #a6a6a6;
+}
+button {
+	background-color: #b9b9b9;
+	color:  black;
+}

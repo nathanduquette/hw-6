@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+
+  <link rel="stylesheet" type="text/css" href="style.css">
+  <title>very boring</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>boring webpage</h1>
+    <div id="btn-dump"></div>
+    <form id="gif-form">
+      <label for="gif-input"><b>more boring ?</b></label>
+      <input type="text" id="gif-input"><br>
+      <input id="add-gif" type="submit" value="more boring!">
+    </form>
+    <div id="gif-dump"></div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.2.0.js"></script>
+    
+  </div>
+</body>
+<script type="text/javascript">
+  $(document).ready(function(){
+
+
+  var gifs = ["DEVO", "corn", "wird", "fail", "ham", "ginger",
+           "segway", "random", "jeff goldblum", "block head", "shaka", "tim gunn"];
+
+  var name = "data-name";
+
+  newBtn();
+//cache
+  var button = $("<button>"),
+      gif = $("#gif-input").val().trim()
+     
+      function newBtn() {
+        // replace gifs
+        $("#btn-dump").empty();
+        // erase input
+        $("#gif-input").empty();
+
+        for (var i = 0; i < gifs.length; i++) {
+
+          button = $("<button>");
+          button.addClass("gif");
+          button.attr("data-name", gifs[i]);
+          button.text(gifs[i]);
+          $("#btn-dump").append(button);
+          //limit the number of buttons 
+  //no wowrk        gifs.splice(0, 1, gif);    
+          };
+      };
+// =====================================================================begin api shit
+ function displayGif() {
+        var gifName = $(this).attr("data-name");
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+            gifName + "&api_key=dc6zaTOxFJmzC&limit=10";
+        
+        $.ajax({
+            url: queryURL,
+            method: "GET"
+          })
+
+        .done(function(response){
+          var results = response.data;  
+          console.log(response); 
+          debugger;     
+          $("#gif-dump").empty();
+
+        for (var i = 0; i < results.length; i++) {
+          if (results[i].rating !== "r" && results[i].rating !== "pg-13") {
+            var gifDiv = $("<div class='item'>");
+            var rating = results[i].rating;
+            var p = $("<p>").text("Rating: " + rating);
+            var gifImage = $("<img>"); 
+                gifImage.attr("src", results[i].images.fixed_height_still.url);
+                gifImage.attr("data-still", results[i].images.fixed_height_still.url);
+                gifImage.attr("data-animate", results[i].images.fixed_height.url);
+                gifImage.attr("data-state", "still");
+                gifImage.addClass("animate");
+               
+                gifDiv.append(p);
+                gifDiv.append(gifImage);
+            
+                $("#gif-dump").prepend(gifDiv);
+
+           };
+
+           $(document).on("click", ".gif", function() {
+
+              var boring = $(this).attr("data-state");
+
+                   if(boring === "animate"){
+                $(this).attr("src", $(this).attr("data-still"));
+             
+                $(this).attr("data-state", "still");
+                }
+                  else{
+                     $(this).attr("src", $(this).attr("data-animate"));
+                       $(this).attr("data-state", "animate");
+          
+                  };
+
+            });
+
+        };
+//========================================================================end api shit
+
+
+        $(document).on("click", ".gif", displayGif);
+
+        
+  
+        $("#add-gif").on("click", function(event) {
+          event.preventDefault();
+          gif = $("#gif-input").val().trim();
+            if(gif === "") {
+              return
+            }
+
+        $("#gif-input").val("");
+          gifs.push(gif);
+          newBtn();
+
+        });
+
+      });
+  };
+});
+</script>
+
+</html>
